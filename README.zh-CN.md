@@ -4,6 +4,8 @@
 
 [English](./README.md) | 简体中文
 
+
+
 ## 功能特性
 
 - ✨ **快速创建** - 通过扩展弹窗快速创建 Memos
@@ -16,7 +18,7 @@
 
 ## 截图
 
-（待添加截图）
+![main-ZH-CN](https://images.hxzhouh.com/blog-images/2025/12/4a14452157d3f769b52dd19dc1e64997.png)
 
 ## 安装方法
 

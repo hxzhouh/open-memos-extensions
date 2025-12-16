@@ -16,7 +16,7 @@ English | [简体中文](./README.zh-CN.md)
 
 ## Screenshots
 
-(Screenshots to be added)
+![main-EN](https://images.hxzhouh.com/blog-images/2025/12/b6430bae2597a50823cb9766a01a8aec.png)
 
 ## Installation
 

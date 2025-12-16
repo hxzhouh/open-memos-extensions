@@ -70,8 +70,9 @@ async function saveSettings() {
   }
 
   // 验证 URL 格式
+  let parsedUrl;
   try {
-    new URL(serverUrl);
+    parsedUrl = new URL(serverUrl);
   } catch (error) {
     showStatus(t('invalid_url'), 'error');
     return;
@@ -81,6 +82,17 @@ async function saveSettings() {
   const cleanServerUrl = serverUrl.replace(/\/$/, '');
 
   try {
+    // 请求访问该服务器的权限
+    const permission = `${parsedUrl.protocol}//${parsedUrl.host}/*`;
+    const granted = await chrome.permissions.request({
+      origins: [permission]
+    });
+
+    if (!granted) {
+      showStatus(t('permission_denied') || '需要授权访问您的 Memos 服务器才能使用此扩展', 'error');
+      return;
+    }
+
     await chrome.storage.sync.set({
       serverUrl: cleanServerUrl,
       apiToken: apiToken,
