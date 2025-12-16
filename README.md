@@ -24,7 +24,7 @@ English | [简体中文](./README.zh-CN.md)
 
 1. Clone this repository or download the source code
    ```bash
-   git clone https://github.com/yourusername/open-memos-extensions.git
+   git clone https://github.com/hxzhouh/open-memos-extensions.git
    ```
 
 2. Open Chrome browser and visit `chrome://extensions/`

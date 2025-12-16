@@ -24,7 +24,7 @@
 
 1. 克隆本仓库或下载源码
    ```bash
-   git clone https://github.com/yourusername/open-memos-extensions.git
+   git clone https://github.com/hxzhouh/open-memos-extensions.git
    ```
 
 2. 打开 Chrome 浏览器,访问 `chrome://extensions/`

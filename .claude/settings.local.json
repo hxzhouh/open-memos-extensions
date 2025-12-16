@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sips:*)",
+      "Bash(git add:*)",
+      "Bash(git rm:*)",
+      "Bash(git commit:*)",
+      "Bash(rsvg-convert:*)",
+      "Bash(file:*)",
+      "Bash(mkdir:*)"
+    ]
+  }
+}
