@@ -21,6 +21,17 @@ const translations = {
     'create_failed': '创建失败',
     'load_failed': '加载失败',
     'config_server_first': '请先在设置中配置 Memos 服务器地址',
+    'select_tag': '选择标签',
+    'no_tags': '暂无标签',
+    'load_tags_failed': '加载标签失败',
+    'load_tags_failed': '加载标签失败',
+    'public': '所有人可见',
+    'protected': '登录用户可见',
+    'private': '仅自己可见',
+    'add_to_memos': '添加到 Memos',
+    'add_page_to_memos': '将页面链接添加到 Memos',
+    'added_to_memos': '已添加到 Memos!',
+    'failed_to_add': '添加失败',
 
     // Options
     'extension_settings': '📝 Memos 扩展设置',
@@ -58,6 +69,7 @@ const translations = {
     'reset_failed': '重置失败',
     'language_settings': '语言设置',
     'language': '界面语言',
+    'default_visibility': '默认可见范围',
     'language_auto': '自动 (跟随浏览器)',
     'language_zh': '简体中文',
     'language_en': 'English',
@@ -84,6 +96,17 @@ const translations = {
     'create_failed': 'Creation failed',
     'load_failed': 'Load failed',
     'config_server_first': 'Please configure Memos server address in settings first',
+    'select_tag': 'Select Tag',
+    'no_tags': 'No tags available',
+    'load_tags_failed': 'Failed to load tags',
+    'load_tags_failed': 'Failed to load tags',
+    'public': 'Public',
+    'protected': 'Members',
+    'private': 'Private',
+    'add_to_memos': 'Add to Memos',
+    'add_page_to_memos': 'Save Page Link to Memos',
+    'added_to_memos': 'Saved to Memos!',
+    'failed_to_add': 'Failed to save',
 
     // Options
     'extension_settings': '📝 Memos Extension Settings',
@@ -121,6 +144,7 @@ const translations = {
     'reset_failed': 'Reset failed',
     'language_settings': 'Language Settings',
     'language': 'Interface Language',
+    'default_visibility': 'Default Visibility',
     'language_auto': 'Auto (Follow Browser)',
     'language_zh': '简体中文',
     'language_en': 'English',
@@ -148,7 +172,8 @@ async function getCurrentLanguage() {
 function t(key, lang = null) {
   if (!lang) {
     // 如果没有提供语言，使用全局语言（需要先设置）
-    lang = window.currentLang || 'en';
+    const globalContext = typeof window !== 'undefined' ? window : self;
+    lang = globalContext.currentLang || 'en';
   }
   return translations[lang]?.[key] || translations['en']?.[key] || key;
 }
@@ -156,30 +181,33 @@ function t(key, lang = null) {
 // 应用翻译到页面
 async function applyTranslations() {
   const lang = await getCurrentLanguage();
-  window.currentLang = lang;
+  const globalContext = typeof window !== 'undefined' ? window : self;
+  globalContext.currentLang = lang;
 
   // 翻译所有带有 data-i18n 属性的元素
-  document.querySelectorAll('[data-i18n]').forEach(element => {
-    const key = element.getAttribute('data-i18n');
-    const translation = t(key, lang);
+  if (typeof document !== 'undefined') {
+    document.querySelectorAll('[data-i18n]').forEach(element => {
+      const key = element.getAttribute('data-i18n');
+      const translation = t(key, lang);
 
-    // 根据元素类型设置文本
-    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-      if (element.type === 'button' || element.type === 'submit') {
-        element.value = translation;
+      // 根据元素类型设置文本
+      if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+        if (element.type === 'button' || element.type === 'submit') {
+          element.value = translation;
+        } else {
+          element.placeholder = translation;
+        }
       } else {
-        element.placeholder = translation;
+        element.textContent = translation;
       }
-    } else {
-      element.textContent = translation;
-    }
-  });
+    });
 
-  // 翻译所有带有 data-i18n-title 属性的元素
-  document.querySelectorAll('[data-i18n-title]').forEach(element => {
-    const key = element.getAttribute('data-i18n-title');
-    element.title = t(key, lang);
-  });
+    // 翻译所有带有 data-i18n-title 属性的元素
+    document.querySelectorAll('[data-i18n-title]').forEach(element => {
+      const key = element.getAttribute('data-i18n-title');
+      element.title = t(key, lang);
+    });
+  }
 
   return lang;
 }

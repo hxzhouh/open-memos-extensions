@@ -1,59 +1,89 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memos Quick Access</title>
-    <link rel="stylesheet" href="popup.css">
-  </head>
-  <body>
-    <div class="container">
-      <!-- Header -->
-      <div class="header">
-        <h1 class="title" data-i18n="app_title">📝 Memos</h1>
-        <button id="settingsBtn" class="icon-btn" data-i18n-title="settings">⚙️</button>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memos Quick Access</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+  <div class="card">
+    <!-- Header -->
+    <div class="header">
+      <h1 class="logo">MEMOS</h1>
+      <button id="settingsBtn" class="icon-btn settings-btn" title="Settings">
+        <svg viewBox="0 0 24 24" fill="none" class="icon">
+          <path
+            d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z"
+            fill="currentColor" />
+          <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M20.0053 12.0002C20.0053 12.7832 20.0469 13.5485 20.126 14.2929L21.7247 15.0924C22.0919 15.2759 22.242 15.7197 22.0624 16.0911L20.8124 18.6759C20.6346 19.0435 20.2017 19.2017 19.8252 19.0357L18.1578 18.3005C17.3887 18.89 16.5358 19.3826 15.6173 19.7618L15.3582 21.5647C15.2996 21.9723 14.9497 22.2702 14.5376 22.2702H11.4624C11.0503 22.2702 10.7004 21.9723 10.6418 21.5647L10.3827 19.7618C9.46419 19.3826 8.61131 18.89 7.8422 18.3005L6.17477 19.0357C5.79831 19.2017 5.36538 19.0435 5.18763 18.6759L3.93763 16.0911C3.75804 15.7197 3.90806 15.2759 4.27533 15.0924L5.87401 14.2929C5.95315 13.5485 5.99472 12.7832 5.99472 12.0002C5.99472 11.2173 5.95315 10.4519 5.87401 9.70756L4.27533 8.90806C3.90806 8.72445 3.75804 8.28073 3.93763 7.90928L5.18763 5.32452C5.36538 4.95689 5.79831 4.79872 6.17477 4.96474L7.8422 5.69991C8.61131 5.11039 9.46419 4.61778 10.3827 4.23861L10.6418 2.43574C10.7004 2.02814 11.0503 1.73022 11.4624 1.73022H14.5376C14.9497 1.73022 15.2996 2.02814 15.3582 2.43574L15.6173 4.23861C16.5358 4.61778 17.3887 5.11039 18.1578 5.69991L19.8252 4.96474C20.2017 4.79872 20.6346 4.95689 20.8124 5.32452L22.0624 7.90928C22.242 8.28073 22.0919 8.72445 21.7247 8.90806L20.126 9.70756C20.0469 10.4519 20.0053 11.2173 20.0053 12.0002Z"
+            fill="currentColor" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Editor -->
+    <div class="editor-container">
+      <textarea id="memoContent" data-i18n="memo_placeholder" placeholder="输入你的想法..." class="memo-input"></textarea>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="toolbar">
+        <button class="tool-btn" data-action="tag" title="Tag">#</button>
+        <button class="tool-btn" data-action="checklist" title="Checklist">
+          <svg viewBox="0 0 24 24" fill="none" class="icon">
+            <path
+              d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </button>
+        <button class="tool-btn" data-action="code" title="Code">
+          <svg viewBox="0 0 24 24" fill="none" class="icon">
+            <path
+              d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <path d="M8 13H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M8 17H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M10 9H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+        <button class="tool-btn" data-action="link" title="Link">
+          <svg viewBox="0 0 24 24" fill="none" class="icon">
+            <path
+              d="M10 13C10.4292 13.5746 11.0827 13.9482 11.8125 13.996L12.2031 14H12.4453L12.9844 13.9609L13.5273 13.8438L14.0391 13.6523L15.3906 12.8711C16.156 12.2858 16.6349 11.3854 16.666 10.375C16.666 9.07914 15.9398 7.95703 14.8906 7.42578C14.5451 7.25049 14.1729 7.13511 13.7812 7.08594L13.3906 7.04688H13.1484L12.6094 7.08594L12.0664 7.20312L11.5547 7.39453"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path
+              d="M14 11C13.5708 10.4254 12.9173 10.0518 12.1875 10.004L11.7969 10H11.5547L11.0156 10.0391L10.4727 10.1562L9.96094 10.3477L8.60938 11.1289C7.84396 11.7142 7.36509 12.6146 7.33398 13.625C7.33398 14.9209 8.06024 16.043 9.10938 16.5742C9.45491 16.7495 9.82708 16.8649 10.2188 16.9141L10.6094 16.9531H10.8516L11.3906 16.9141L11.9336 16.7969L12.4453 16.6055"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+        <!-- Placeholder for Random/Shuffle and Search as per design, keeping simple implementation for now -->
       </div>
 
-      <!-- Status -->
-      <div id="status" class="status hidden"></div>
-
-      <!-- Quick Create -->
-      <div class="section">
-        <h2 class="section-title" data-i18n="quick_create">快速创建</h2>
-        <textarea
-          id="memoContent"
-          data-i18n="memo_placeholder"
-          placeholder="输入你的想法..."
-          rows="4"
-        ></textarea>
-        <div class="actions">
-          <button id="createBtn" class="btn btn-primary" data-i18n="create_memo">创建 Memo</button>
-          <button id="clearBtn" class="btn btn-secondary" data-i18n="clear">清空</button>
-        </div>
-      </div>
-
-      <!-- Recent Memos -->
-      <div class="section">
-        <div class="section-header">
-          <h2 class="section-title" data-i18n="recent_memos">最近笔记</h2>
-          <button id="refreshBtn" class="icon-btn" data-i18n-title="refresh">🔄</button>
-        </div>
-        <div id="recentMemos" class="memos-list">
-          <div class="loading" data-i18n="loading">加载中...</div>
-        </div>
-      </div>
-
-      <!-- Quick Links -->
-      <div class="section">
-        <div class="quick-links">
-          <a id="openMemosBtn" href="#" class="link-btn" target="_blank" data-i18n="open_memos">
-            打开 Memos
-          </a>
-        </div>
+      <div class="actions">
+        <select id="visibilitySelect" class="visibility-select">
+          <option value="PUBLIC" data-i18n="public">所有人可见</option>
+          <option value="PROTECTED" data-i18n="protected">登录用户可见</option>
+          <option value="PRIVATE" selected data-i18n="private">仅自己可见</option>
+        </select>
+        <button id="createBtn" class="btn-primary" data-i18n="create_memo">记下</button>
       </div>
     </div>
 
-    <script src="i18n.js"></script>
-    <script src="popup.js"></script>
-  </body>
+    <!-- Status Message Overlay -->
+    <div id="status" class="status-overlay hidden"></div>
+  </div>
+
+  <script src="i18n.js"></script>
+  <script src="popup.js"></script>
+</body>
+
 </html>

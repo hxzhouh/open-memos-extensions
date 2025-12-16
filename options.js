@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 // 加载已保存的设置
 async function loadSettings() {
   try {
-    const result = await chrome.storage.sync.get(['serverUrl', 'apiToken', 'language']);
+    const result = await chrome.storage.sync.get(['serverUrl', 'apiToken', 'language', 'defaultVisibility']);
 
     if (result.serverUrl) {
       document.getElementById('serverUrl').value = result.serverUrl;
@@ -16,6 +16,10 @@ async function loadSettings() {
 
     if (result.apiToken) {
       document.getElementById('apiToken').value = result.apiToken;
+    }
+
+    if (result.defaultVisibility) {
+      document.getElementById('defaultVisibility').value = result.defaultVisibility;
     }
 
     if (result.language) {
@@ -56,6 +60,7 @@ function initializeEventListeners() {
 async function saveSettings() {
   const serverUrl = document.getElementById('serverUrl').value.trim();
   const apiToken = document.getElementById('apiToken').value.trim();
+  const defaultVisibility = document.getElementById('defaultVisibility').value;
   const language = document.getElementById('language').value;
 
   // 验证服务器地址
@@ -79,6 +84,7 @@ async function saveSettings() {
     await chrome.storage.sync.set({
       serverUrl: cleanServerUrl,
       apiToken: apiToken,
+      defaultVisibility: defaultVisibility,
       language: language
     });
 
@@ -147,6 +153,7 @@ async function resetSettings() {
     await chrome.storage.sync.clear();
     document.getElementById('serverUrl').value = '';
     document.getElementById('apiToken').value = '';
+    document.getElementById('defaultVisibility').value = 'PRIVATE';
     document.getElementById('language').value = 'auto';
     showStatus(t('settings_reset'), 'success');
     // 重新加载翻译

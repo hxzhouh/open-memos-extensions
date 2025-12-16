@@ -51,3 +51,6 @@ yarn.lock
 
 # Chrome extension packaging
 key.pem
+
+./claude
+./gemini

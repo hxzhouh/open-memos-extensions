@@ -1,53 +1,54 @@
-// Memos API 配置
+// Memos API Config
 let memosConfig = {
   serverUrl: '',
-  apiToken: ''
+  apiToken: '',
+  defaultVisibility: 'PRIVATE'
 };
 
-// 初始化
+// Initialize
 document.addEventListener('DOMContentLoaded', async () => {
   await applyTranslations();
   await loadConfig();
   initializeUI();
-  loadRecentMemos();
 });
 
-// 加载配置
+// Load Config
 async function loadConfig() {
   try {
-    const result = await chrome.storage.sync.get(['serverUrl', 'apiToken']);
+    const result = await chrome.storage.sync.get(['serverUrl', 'apiToken', 'defaultVisibility']);
     memosConfig.serverUrl = result.serverUrl || '';
     memosConfig.apiToken = result.apiToken || '';
+    memosConfig.defaultVisibility = result.defaultVisibility || 'PRIVATE';
 
-    // 更新打开 Memos 按钮的链接
-    const openMemosBtn = document.getElementById('openMemosBtn');
-    if (memosConfig.serverUrl) {
-      openMemosBtn.href = memosConfig.serverUrl;
+    // Set default visibility in dropdown
+    const visibilitySelect = document.getElementById('visibilitySelect');
+    if (visibilitySelect) {
+      visibilitySelect.value = memosConfig.defaultVisibility;
     }
   } catch (error) {
-    console.error('加载配置失败:', error);
+    console.error('Failed to load config:', error);
   }
 }
 
-// 初始化 UI 事件
+// Initialize UI Events
 function initializeUI() {
-  // 创建 Memo 按钮
+  // Create Memo Button
   document.getElementById('createBtn').addEventListener('click', createMemo);
 
-  // 清空按钮
-  document.getElementById('clearBtn').addEventListener('click', () => {
-    document.getElementById('memoContent').value = '';
-  });
-
-  // 刷新按钮
-  document.getElementById('refreshBtn').addEventListener('click', loadRecentMemos);
-
-  // 设置按钮
+  // Settings Button
   document.getElementById('settingsBtn').addEventListener('click', () => {
     chrome.runtime.openOptionsPage();
   });
 
-  // 支持 Ctrl+Enter 快速创建
+  // Toolbar Actions
+  document.querySelectorAll('.tool-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const action = e.currentTarget.dataset.action;
+      handleToolbarAction(action);
+    });
+  });
+
+  // Ctrl+Enter Quick Create
   document.getElementById('memoContent').addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       createMemo();
@@ -55,9 +56,51 @@ function initializeUI() {
   });
 }
 
-// 创建 Memo
+// Handle Toolbar Actions
+function handleToolbarAction(action) {
+  const textarea = document.getElementById('memoContent');
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const text = textarea.value;
+
+  let insertText = '';
+  let newCursorPos = start;
+
+  switch (action) {
+    case 'tag':
+      insertText = '# ';
+      newCursorPos = start + insertText.length;
+      break;
+    case 'checklist':
+      // If at start of line or previous char is newline
+      if (start === 0 || text[start - 1] === '\n') {
+        insertText = '- [ ] ';
+      } else {
+        insertText = '\n- [ ] ';
+      }
+      newCursorPos = start + insertText.length;
+      break;
+    case 'code':
+      insertText = '```\n\n```';
+      newCursorPos = start + 4; // Position inside the block
+      break;
+    case 'link':
+      insertText = '[]()';
+      newCursorPos = start + 1; // Position inside brackets
+      break;
+  }
+
+  if (insertText) {
+    textarea.value = text.substring(0, start) + insertText + text.substring(end);
+    textarea.focus();
+    textarea.setSelectionRange(newCursorPos, newCursorPos);
+  }
+}
+
+// Create Memo
 async function createMemo() {
   const content = document.getElementById('memoContent').value.trim();
+  const visibility = document.getElementById('visibilitySelect').value;
 
   if (!content) {
     showStatus(t('input_required'), 'error');
@@ -83,7 +126,7 @@ async function createMemo() {
       },
       body: JSON.stringify({
         content: content,
-        visibility: 'PRIVATE'
+        visibility: visibility
       })
     });
 
@@ -91,107 +134,34 @@ async function createMemo() {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
-    const data = await response.json();
+    await response.json();
 
     showStatus(t('create_success'), 'success');
     document.getElementById('memoContent').value = '';
 
-    // 刷新最近笔记列表
-    setTimeout(() => {
-      loadRecentMemos();
-    }, 500);
+    // Reset visibility to configured default preference
+    document.getElementById('visibilitySelect').value = memosConfig.defaultVisibility;
 
   } catch (error) {
-    console.error('创建 Memo 失败:', error);
+    console.error('Failed to create memo:', error);
     showStatus(`${t('create_failed')}: ${error.message}`, 'error');
   }
 }
 
-// 加载最近的 Memos
-async function loadRecentMemos() {
-  const container = document.getElementById('recentMemos');
-
-  if (!memosConfig.serverUrl) {
-    container.innerHTML = `<div class="empty-state">${t('config_required')}</div>`;
-    return;
-  }
-
-  try {
-    container.innerHTML = `<div class="loading">${t('loading')}</div>`;
-
-    const response = await fetch(
-      `${memosConfig.serverUrl}/api/v1/memos?limit=5`,
-      {
-        headers: {
-          'Authorization': `Bearer ${memosConfig.apiToken}`
-        }
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    const data = await response.json();
-    const memos = data.memos || [];
-
-    if (memos.length === 0) {
-      container.innerHTML = `<div class="empty-state">${t('empty_state')}</div>`;
-      return;
-    }
-
-    container.innerHTML = memos.map(memo => createMemoElement(memo)).join('');
-
-  } catch (error) {
-    console.error('加载 Memos 失败:', error);
-    container.innerHTML = `<div class="error-state">${t('load_failed')}: ${error.message}</div>`;
-  }
-}
-
-// 创建 Memo 元素
-function createMemoElement(memo) {
-  const content = memo.content || '';
-  const displayContent = content.length > 100
-    ? content.substring(0, 100) + '...'
-    : content;
-
-  const createdTime = memo.createTime
-    ? new Date(memo.createTime).toLocaleString('zh-CN', {
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-      })
-    : '';
-
-  const memoUrl = `${memosConfig.serverUrl}/m/${memo.name || memo.id}`;
-
-  return `
-    <div class="memo-item">
-      <div class="memo-content">${escapeHtml(displayContent)}</div>
-      <div class="memo-footer">
-        <span class="memo-time">${createdTime}</span>
-        <a href="${memoUrl}" target="_blank" class="memo-link">${t('view')}</a>
-      </div>
-    </div>
-  `;
-}
-
-// 显示状态消息
+// Show Status Message
 function showStatus(message, type = 'info') {
   const statusElement = document.getElementById('status');
   statusElement.textContent = message;
-  statusElement.className = `status ${type}`;
+
+  // Remove previous classes
+  statusElement.className = 'status-overlay';
+  statusElement.classList.add(type);
+
+  // Show
   statusElement.classList.remove('hidden');
 
+  // Hide after 3 seconds
   setTimeout(() => {
     statusElement.classList.add('hidden');
   }, 3000);
-}
-
-// HTML 转义
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
 }
