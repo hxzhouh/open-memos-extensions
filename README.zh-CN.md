@@ -39,7 +39,7 @@
 
 ### 从 Chrome Web Store 安装
 
-（即将上线）
+[Memos Quick Access](https://chromewebstore.google.com/detail/Memos%20Quick%20Access/jnpifgalpnmplopphcmbfbpcccjlncdh?hl=zh-CN&utm_source=ext_sidebar)
 
 ## 使用说明
 
