@@ -37,7 +37,8 @@ English | [简体中文](./README.zh-CN.md)
 
 ### Install from Chrome Web Store
 
-(Coming soon)
+[Memos Quick Access](https://chromewebstore.google.com/detail/Memos%20Quick%20Access/jnpifgalpnmplopphcmbfbpcccjlncdh?hl=zh-CN&utm_source=ext_sidebar)
+
 
 ## Usage
 
